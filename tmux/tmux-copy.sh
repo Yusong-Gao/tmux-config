@@ -3,11 +3,18 @@
 
 input=$(cat)
 
-# 如果当前没有 DISPLAY，尝试从 tmux 环境获取
+# 如果当前没有 DISPLAY，尝试从 tmux 环境获取，再兜底尝试从系统获取
 if [ -z "$DISPLAY" ]; then
-    DISPLAY=$(tmux show-environment DISPLAY 2>/dev/null | sed 's/^DISPLAY=//')
-    export DISPLAY
+    DISPLAY=$(tmux show-environment DISPLAY 2>/dev/null | grep -v '^-' | sed 's/^DISPLAY=//')
 fi
+if [ -z "$DISPLAY" ]; then
+    # 从当前登录的 X11 session 中获取 DISPLAY
+    DISPLAY=$(who 2>/dev/null | grep '(:' | head -1 | sed 's/.*(\(:[0-9]*\)).*/\1/')
+fi
+if [ -z "$DISPLAY" ]; then
+    DISPLAY=":0"
+fi
+export DISPLAY
 
 # 有 DISPLAY + xclip → 用 xclip 写系统剪贴板
 if [ -n "$DISPLAY" ] && command -v xclip &>/dev/null; then
