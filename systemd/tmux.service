@@ -1,0 +1,12 @@
+[Unit]
+Description=Start tmux server on login
+After=default.target
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/tmux new-session -d -s main
+ExecStop=/usr/bin/tmux kill-server
+RemainAfterExit=yes
+
+[Install]
+WantedBy=default.target

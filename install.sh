@@ -63,9 +63,33 @@ backup_if_exists "$HOME/.tmux-url.sh"
 ln -s "$DOTFILES_DIR/tmux/tmux-url.sh" "$HOME/.tmux-url.sh"
 chmod +x "$DOTFILES_DIR/tmux/tmux-url.sh"
 
+# ---------- 安装 TPM ----------
+if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
+    echo "[INSTALL] TPM (Tmux Plugin Manager)"
+    git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+fi
+
+# ---------- systemd 开机自启（仅 Linux） ----------
+if [[ "$(uname)" == "Linux" ]] && command -v systemctl &>/dev/null; then
+    echo "[SETUP] systemd tmux auto-start"
+    mkdir -p "$HOME/.config/systemd/user"
+    cp "$DOTFILES_DIR/systemd/tmux.service" "$HOME/.config/systemd/user/tmux.service"
+    systemctl --user daemon-reload
+    mkdir -p "$HOME/.config/systemd/user/default.target.wants"
+    ln -sf "$HOME/.config/systemd/user/tmux.service" "$HOME/.config/systemd/user/default.target.wants/tmux.service"
+    sudo loginctl enable-linger "$(whoami)" 2>/dev/null || echo "[WARN] enable-linger failed, tmux may not auto-start on boot"
+    echo "[OK] tmux will auto-start on boot"
+fi
+
 # ---------- 重载 tmux ----------
 if tmux info &>/dev/null; then
     tmux source-file "$HOME/.tmux.conf" 2>/dev/null && echo "[OK] tmux config reloaded"
+fi
+
+# ---------- 安装 tmux 插件 ----------
+if [ -x "$HOME/.tmux/plugins/tpm/bin/install_plugins" ]; then
+    echo "[INSTALL] tmux plugins"
+    "$HOME/.tmux/plugins/tpm/bin/install_plugins"
 fi
 
 echo ""
