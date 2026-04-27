@@ -63,6 +63,10 @@ backup_if_exists "$HOME/.tmux-url.sh"
 ln -s "$DOTFILES_DIR/tmux/tmux-url.sh" "$HOME/.tmux-url.sh"
 chmod +x "$DOTFILES_DIR/tmux/tmux-url.sh"
 
+echo "[LINK] vimrc"
+backup_if_exists "$HOME/.vimrc"
+ln -s "$DOTFILES_DIR/vim/vimrc" "$HOME/.vimrc"
+
 # ---------- 安装 TPM ----------
 if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
     echo "[INSTALL] TPM (Tmux Plugin Manager)"

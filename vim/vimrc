@@ -1,0 +1,18 @@
+" 修复 tmux 内 terminfo 不识别的问题
+" vim 8.1 内置不认识 tmux-256color，强制用 xterm-256color
+if &term =~# 'tmux'
+  let &term = 'xterm-256color'
+endif
+
+" 确保 Home/End 在所有模式下正常工作
+map  <Esc>[H  <Home>
+map  <Esc>[F  <End>
+imap <Esc>[H  <Home>
+imap <Esc>[F  <End>
+map  <Esc>OH  <Home>
+map  <Esc>OF  <End>
+imap <Esc>OH  <Home>
+imap <Esc>OF  <End>
+
+" 启用 256 色
+set t_Co=256
